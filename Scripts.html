@@ -1,0 +1,151 @@
+<script>
+(function () {
+  const APP_URL = '<?= appUrl ?>';
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const mobileMenuButton = document.getElementById('mobileMenuButton');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const profileName = document.getElementById('profileName');
+  const profileRole = document.getElementById('profileRole');
+  const profileAvatar = document.getElementById('profileAvatar');
+  const topLogout = document.getElementById('topLogout');
+  const sidebarLogout = document.getElementById('sidebarLogout');
+  const currentPage = document.body.getAttribute('data-page') || 'dashboard';
+
+  function goToPage(page) {
+    if (!page || page === currentPage) return;
+    window.top.location.href = APP_URL + '?page=' + encodeURIComponent(page);
+  }
+
+  document.querySelectorAll('.nav-item[data-page]').forEach(function (item) {
+    item.addEventListener('click', function () {
+      goToPage(item.getAttribute('data-page'));
+    });
+    item.classList.toggle('active', item.getAttribute('data-page') === currentPage);
+  });
+
+  function goToLogin() {
+    window.top.location.href = APP_URL;
+  }
+
+  const token = sessionStorage.getItem('sms_token');
+  const savedUser = sessionStorage.getItem('sms_user');
+
+  if (!token || !savedUser) {
+    goToLogin();
+    return;
+  }
+
+  let user = {};
+  try {
+    user = JSON.parse(savedUser);
+  } catch (error) {
+    goToLogin();
+    return;
+  }
+
+  const displayName = user.full_name || user.nama || user.name ||
+    user.fullName || user.employeeName || user.namaPegawai ||
+    user.nama_user || user.nip || 'Pengguna';
+
+  const displayRole = user.role || user.jabatan || user.position ||
+    user.level || 'USER';
+
+  if (profileName) profileName.textContent = displayName;
+  if (profileRole) profileRole.textContent = String(displayRole).toUpperCase();
+  if (profileAvatar) profileAvatar.textContent =
+    String(displayName).trim().charAt(0).toUpperCase();
+
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  function updateToggleState() {
+    const isOpen = document.body.classList.contains('sidebar-open');
+    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+
+    if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', String(!isCollapsed));
+    if (mobileMenuButton) mobileMenuButton.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function () {
+      if (isMobile()) document.body.classList.toggle('sidebar-open');
+      else document.body.classList.toggle('sidebar-collapsed');
+      updateToggleState();
+    });
+  }
+
+  if (mobileMenuButton) {
+    mobileMenuButton.addEventListener('click', function () {
+      document.body.classList.toggle('sidebar-open');
+      updateToggleState();
+    });
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', function () {
+      document.body.classList.remove('sidebar-open');
+      updateToggleState();
+    });
+  }
+
+  window.addEventListener('resize', function () {
+    if (!isMobile()) document.body.classList.remove('sidebar-open');
+    updateToggleState();
+  });
+
+  function confirmLogout() {
+    const executeLogout = function () {
+      google.script.run
+        .withSuccessHandler(function () {
+          sessionStorage.removeItem('sms_token');
+          sessionStorage.removeItem('sms_user');
+          goToLogin();
+        })
+        .withFailureHandler(function (error) {
+          alert(error && error.message ? error.message : 'Logout gagal.');
+        })
+        .logout(token);
+    };
+
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        title: 'Keluar dari sistem?',
+        text: 'Sesi Anda akan diakhiri.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#087bd1',
+        reverseButtons: true
+      }).then(function (result) {
+        if (result.isConfirmed) executeLogout();
+      });
+    } else if (confirm('Keluar dari sistem?')) {
+      executeLogout();
+    }
+  }
+
+  if (topLogout) topLogout.addEventListener('click', confirmLogout);
+  if (sidebarLogout) sidebarLogout.addEventListener('click', confirmLogout);
+
+  function loadImage(targetId, loaderFunction) {
+    const target = document.getElementById(targetId);
+    if (!target || typeof google === 'undefined') return;
+    google.script.run
+      .withSuccessHandler(function (dataUri) {
+        if (dataUri) target.src = dataUri;
+      })
+      .withFailureHandler(function (error) {
+        console.error('Gagal memuat gambar:', error);
+      })[loaderFunction]();
+  }
+
+  loadImage('logoDanantara', 'getLogoDanantara');
+  loadImage('logoASDP', 'getLogoASDP');
+  loadImage('logoJN', 'getLogoJN');
+
+  updateToggleState();
+})();
+</script>

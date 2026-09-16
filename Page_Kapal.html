@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Data Kapal - Ship Maintenance System</title>
+
+  <style>
+    :root {
+      --navy: #062c55;
+      --blue: #087bd1;
+      --bg: #edf5fb;
+      --text: #173b61;
+      --muted: #7890a8;
+      --line: #dbe8f3;
+      --green: #16a579;
+      --orange: #f59b35;
+      --red: #ef4d4d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Segoe UI, Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 68px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 28px;
+    }
+
+    .topbar-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .back-button {
+      border: 0;
+      border-radius: 10px;
+      background: #eaf5fd;
+      color: var(--blue);
+      width: 38px;
+      height: 38px;
+      font-size: 20px;
+    }
+
+    .topbar-title strong {
+      display: block;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .topbar-title small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .topbar-user {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .content {
+      max-width: 1500px;
+      margin: auto;
+      padding: 25px;
+    }
+
+    .page-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .page-heading h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 25px;
+    }
+
+    .page-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .primary-button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 17px;
+      background: var(--blue);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .primary-button:hover {
+      background: #0569b5;
+    }
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-input,
+    .filter-select {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 13px;
+      background: #ffffff;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .search-input {
+      width: 290px;
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+      border-color: var(--blue);
+    }
+
+    .total-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th {
+      padding: 13px 12px;
+      text-align: left;
+      white-space: nowrap;
+      background: #f5faff;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #edf3f8;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fafdff;
+    }
+
+    .ship-name {
+      display: block;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .ship-code {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-operating {
+      background: #e5f8ef;
+      color: #087b55;
+    }
+
+    .status-docking {
+      background: #fff1d8;
+      color: #a96b0b;
+    }
+
+    .status-maintenance {
+      background: #ffebee;
+      color: #c53645;
+    }
+
+    .status-inactive {
+      background: #edf0f4;
+      color: #687789;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      padding: 7px 9px;
+      font-size: 11px;
+    }
+
+    .action-button:hover {
+      background: #eaf5fd;
+      color: var(--blue);
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pagination-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .page-button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      min-width: 34px;
+      height: 34px;
+    }
+
+    .page-button.active {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .page-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .add-modal {
+        width: min(900px, 100%);
+      }
+
+      .modal-subtitle {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .form-section-title {
+        margin: 5px 0 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+        color: var(--navy);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .form-section-title:not(:first-child) {
+        margin-top: 25px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px 18px;
+        margin-bottom: 20px;
+      }
+
+      .form-field {
+        min-width: 0;
+        margin-bottom: 15px;
+      }
+
+      .form-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .form-field label span {
+        color: #d64545;
+      }
+
+      .form-field input,
+      .form-field select,
+      .form-field textarea {
+        width: 100%;
+        min-width: 0;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+        outline: none;
+      }
+
+      .form-field input:focus,
+      .form-field select:focus,
+      .form-field textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(8, 123, 209, 0.12);
+      }
+
+      .form-field textarea {
+        resize: vertical;
+      }
+
+      .form-message {
+        display: none;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #fff4e5;
+        color: #9a5b00;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .form-message.show {
+        display: block;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 18px 24px;
+        border-top: 1px solid var(--line);
+      }
+
+      .secondary-button {
+        padding: 11px 18px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .secondary-button:hover {
+        background: #f5faff;
+      }
+
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .modal-footer {
+          padding: 15px;
+        }
+      }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      padding: 25px;
+      background: rgba(2, 23, 40, 0.58);
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      width: min(850px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0, 20, 40, 0.25);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .modal-close {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 25px;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .gallery-image {
+      width: 100%;
+      height: 145px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #edf5fb;
+      border: 1px solid var(--line);
+    }
+
+    .gallery-image:first-child {
+      height: 300px;
+      grid-row: span 2;
+    }
+
+    .particular-title {
+      margin: 0 0 15px;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .particular-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 20px;
+    }
+
+    .particular-item {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #edf3f8;
+    }
+
+    .particular-item label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .particular-item strong {
+      display: block;
+      color: var(--text);
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .notes {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #f5faff;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        height: auto;
+        min-height: 68px;
+        padding: 12px 15px;
+      }
+
+      .topbar-user {
+        display: none;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .search-input {
+        width: 100%;
+      }
+
+      .toolbar-left {
+        width: 100%;
+      }
+
+      .filter-select {
+        flex: 1;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .gallery-image:first-child {
+        height: 210px;
+        grid-column: span 2;
+        grid-row: auto;
+      }
+
+      .gallery-image {
+        height: 120px;
+      }
+
+      .particular-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pagination {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+<?!= include('Styles'); ?>
+</head>
+
+<body data-page="kapal">
+  <?!= include('Sidebar'); ?>
+
+  <div class="page">
+
+    <?!= include('Navbar'); ?>
+
+
+    <main class="content">
+
+      <div class="page-heading">
+        <div>
+          <h1>Daftar Kapal</h1>
+          <p>Kelola data dan ship particular seluruh armada.</p>
+        </div>
+
+        <button class="primary-button" onclick="openAddModal()">
+          + Tambah Kapal
+        </button>
+      </div>
+
+      <section class="panel">
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <input
+              type="search"
+              id="searchInput"
+              class="search-input"
+              placeholder="Cari kode, nama, IMO, operator..."
+              oninput="applyFilter()">
+
+            <select
+              id="statusFilter"
+              class="filter-select"
+              onchange="applyFilter()">
+
+              <option value="">Semua Status</option>
+              <option value="Beroperasi">Beroperasi</option>
+              <option value="Docking">Docking</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Tidak Aktif">Tidak Aktif</option>
+            </select>
+          </div>
+
+          <span class="total-label" id="totalLabel">
+            0 kapal
+          </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Kapal</th>
+                <th>Nomor IMO</th>
+                <th>Jenis</th>
+                <th>Pelabuhan Asal</th>
+                <th>Operator</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody id="shipTableBody">
+              <tr>
+                <td colspan="8" class="empty">
+                  Memuat data kapal...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span id="paginationInfo">
+            Menampilkan 0 data
+          </span>
+
+          <div class="pagination-buttons" id="paginationButtons"></div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+        <h2>Ship Particular</h2>
+
+        <button class="modal-close" onclick="closeDetail()">
+          ×
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="gallery" id="shipGallery"></div>
+
+        <h3 class="particular-title">
+          Informasi Kapal
+        </h3>
+
+        <div class="particular-grid" id="particularGrid"></div>
+
+        <div class="notes" id="shipNotes"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="addModal">
+  <div class="modal add-modal">
+
+    <div class="modal-header">
+      <div>
+        <h2>Tambah Data Kapal</h2>
+        <p class="modal-subtitle">
+          Isi data ship particular kapal baru.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        onclick="closeAddModal()">
+        ×
+      </button>
+    </div>
+
+    <form id="addShipForm" onsubmit="submitAddShip(event)">
+      <div class="modal-body">
+
+        <div class="form-section-title">
+          Identitas Kapal
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="ship_code">
+              Kode Kapal <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              id="ship_code"
+              name="ship_code"
+              placeholder="Contoh: JN-001"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="ship_name">
+              Nama Kapal <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              id="ship_name"
+              name="ship_name"
+              placeholder="Nama kapal"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="imo_number">
+              Nomor IMO
+            </label>
+
+            <input
+              type="text"
+              id="imo_number"
+              name="imo_number"
+              placeholder="Nomor IMO">
+          </div>
+
+          <div class="form-field">
+            <label for="ship_type">
+              Jenis Kapal
+            </label>
+
+            <input
+              type="text"
+              id="ship_type"
+              name="ship_type"
+              placeholder="Contoh: Ferry Ro-Ro">
+          </div>
+
+          <div class="form-field">
+            <label for="flag">
+              Bendera
+            </label>
+
+            <input
+              type="text"
+              id="flag"
+              name="flag"
+              placeholder="Contoh: Indonesia">
+          </div>
+
+          <div class="form-field">
+            <label for="year_built">
+              Tahun Pembuatan
+            </label>
+
+            <input
+              type="number"
+              id="year_built"
+              name="year_built"
+              min="1900"
+              max="2100"
+              placeholder="Contoh: 2018">
+          </div>
+        </div>
+
+        <div class="form-section-title">
+          Dimensi dan Kapasitas
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="length">
+              Panjang
+            </label>
+
+            <input
+              type="text"
+              id="length"
+              name="length"
+              placeholder="Contoh: 120 m">
+          </div>
+
+          <div class="form-field">
+            <label for="width">
+              Lebar
+            </label>
+
+            <input
+              type="text"
+              id="width"
+              name="width"
+              placeholder="Contoh: 20 m">
+          </div>
+
+          <div class="form-field">
+            <label for="gross_tonnage">
+              Gross Tonnage
+            </label>
+
+            <input
+              type="text"
+              id="gross_tonnage"
+              name="gross_tonnage"
+              placeholder="Contoh: 8500">
+          </div>
+
+          <div class="form-field">
+            <label for="passenger_capacity">
+              Kapasitas Penumpang
+            </label>
+
+            <input
+              type="number"
+              id="passenger_capacity"
+              name="passenger_capacity"
+              min="0"
+              placeholder="Jumlah penumpang">
+          </div>
+
+          <div class="form-field">
+            <label for="vehicle_capacity">
+              Kapasitas Kendaraan
+            </label>
+
+            <input
+              type="number"
+              id="vehicle_capacity"
+              name="vehicle_capacity"
+              min="0"
+              placeholder="Jumlah kendaraan">
+          </div>
+        </div>
+
+        <div class="form-section-title">
+          Operasional
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="home_port">
+              Pelabuhan Asal
+            </label>
+
+            <input
+              type="text"
+              id="home_port"
+              name="home_port"
+              placeholder="Pelabuhan asal">
+          </div>
+
+          <div class="form-field">
+            <label for="operator">
+              Operator
+            </label>
+
+            <input
+              type="text"
+              id="operator"
+              name="operator"
+              placeholder="Nama operator">
+          </div>
+
+          <div class="form-field">
+            <label for="current_status">
+              Status Kapal
+            </label>
+
+            <select id="current_status" name="current_status">
+              <option value="Beroperasi">Beroperasi</option>
+              <option value="Docking">Docking</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Tidak Aktif">Tidak Aktif</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="photo_url">
+              URL Foto Utama
+            </label>
+
+            <input
+              type="url"
+              id="photo_url"
+              name="photo_url"
+              placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="notes">
+            Catatan
+          </label>
+
+          <textarea
+            id="notes"
+            name="notes"
+            rows="4"
+            placeholder="Catatan tambahan kapal"></textarea>
+        </div>
+
+        <div
+          id="addShipMessage"
+          class="form-message"
+          role="alert">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="secondary-button"
+          onclick="closeAddModal()">
+          Batal
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+          id="saveShipButton">
+          Simpan Kapal
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <script>
+    const APP_URL = '<?= appUrl ?>';
+
+    let allShips = [];
+    let filteredShips = [];
+    let currentPage = 1;
+    const pageSize = 10;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadUser();
+      loadShips();
+    });
+
+    function loadUser() {
+      const savedUser = sessionStorage.getItem('sms_user');
+
+      if (!savedUser) {
+        document.getElementById('topbarUser').textContent = 'Pengguna';
+        return;
+      }
+
+      try {
+        const user = JSON.parse(savedUser);
+
+        document.getElementById('topbarUser').textContent =
+          user.full_name ||
+          user.name ||
+          user.nama ||
+          user.nip ||
+          'Pengguna';
+
+      } catch (error) {
+        document.getElementById('topbarUser').textContent = 'Pengguna';
+      }
+    }
+
+    function loadShips() {
+      google.script.run
+        .withSuccessHandler(function (data) {
+          allShips = Array.isArray(data) ? data : [];
+          filteredShips = allShips.slice();
+          currentPage = 1;
+          renderTable();
+        })
+        .withFailureHandler(function (error) {
+          document.getElementById('shipTableBody').innerHTML =
+            '<tr><td colspan="8" class="empty">' +
+            'Gagal memuat data kapal: ' +
+            escapeHtml(error.message || error) +
+            '</td></tr>';
+        })
+        .getShips();
+    }
+
+    function applyFilter() {
+      const keyword = document
+        .getElementById('searchInput')
+        .value
+        .toLowerCase()
+        .trim();
+
+      const status = document
+        .getElementById('statusFilter')
+        .value
+        .toLowerCase();
+
+      filteredShips = allShips.filter(function (ship) {
+        const searchable = [
+          ship.ship_id,
+          ship.ship_code,
+          ship.ship_name,
+          ship.imo_number,
+          ship.ship_type,
+          ship.flag,
+          ship.home_port,
+          ship.operator
+        ].join(' ').toLowerCase();
+
+        const matchKeyword = !keyword ||
+          searchable.includes(keyword);
+
+        const matchStatus = !status ||
+          String(ship.current_status).toLowerCase() === status;
+
+        return matchKeyword && matchStatus;
+      });
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    function renderTable() {
+      const body = document.getElementById('shipTableBody');
+      const total = filteredShips.length;
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const rows = filteredShips.slice(start, end);
+
+      document.getElementById('totalLabel').textContent =
+        total + ' kapal';
+
+      if (!rows.length) {
+        body.innerHTML =
+          '<tr><td colspan="8" class="empty">' +
+          'Belum ada data kapal.' +
+          '</td></tr>';
+
+        renderPagination();
+        return;
+      }
+
+      body.innerHTML = rows.map(function (ship, index) {
+        const statusClass = getStatusClass(ship.current_status);
+
+        return `
+          <tr>
+            <td>${start + index + 1}</td>
+
+            <td>
+              <span class="ship-name">
+                ${escapeHtml(ship.ship_name || '-')}
+              </span>
+
+              <span class="ship-code">
+                ${escapeHtml(ship.ship_code || '-')}
+              </span>
+            </td>
+
+            <td>${escapeHtml(ship.imo_number || '-')}</td>
+            <td>${escapeHtml(ship.ship_type || '-')}</td>
+            <td>${escapeHtml(ship.home_port || '-')}</td>
+            <td>${escapeHtml(ship.operator || '-')}</td>
+
+            <td>
+              <span class="status ${statusClass}">
+                ${escapeHtml(ship.current_status || 'Belum diatur')}
+              </span>
+            </td>
+
+            <td>
+              <div class="action-group">
+                <button
+                  class="action-button"
+                  onclick="showDetail('${encodeURIComponent(ship.ship_id)}')">
+                  Detail
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.max(
+        1,
+        Math.ceil(filteredShips.length / pageSize)
+      );
+
+      if (currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+
+      const start = filteredShips.length
+        ? (currentPage - 1) * pageSize + 1
+        : 0;
+
+      const end = Math.min(
+        currentPage * pageSize,
+        filteredShips.length
+      );
+
+      document.getElementById('paginationInfo').textContent =
+        'Menampilkan ' + start + '–' + end +
+        ' dari ' + filteredShips.length + ' data';
+
+      const container = document.getElementById('paginationButtons');
+
+      let html = `
+        <button
+          class="page-button"
+          onclick="changePage(${currentPage - 1})"
+          ${currentPage === 1 ? 'disabled' : ''}>
+          ‹
+        </button>
+      `;
+
+      for (let page = 1; page <= totalPages; page++) {
+        html += `
+          <button
+            class="page-button ${page === currentPage ? 'active' : ''}"
+            onclick="changePage(${page})">
+            ${page}
+          </button>
+        `;
+      }
+
+      html += `
+        <button
+          class="page-button"
+          onclick="changePage(${currentPage + 1})"
+          ${currentPage === totalPages ? 'disabled' : ''}>
+          ›
+        </button>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.max(
+        1,
+        Math.ceil(filteredShips.length / pageSize)
+      );
+
+      if (page < 1 || page > totalPages) {
+        return;
+      }
+
+      currentPage = page;
+      renderTable();
+    }
+
+    function showDetail(encodedId) {
+      const shipId = decodeURIComponent(encodedId);
+
+      const ship = allShips.find(function (item) {
+        return String(item.ship_id) === String(shipId);
+      });
+
+      if (!ship) {
+        return;
+      }
+
+      renderGallery(ship);
+      renderParticular(ship);
+
+      document
+        .getElementById('detailModal')
+        .classList.add('show');
+    }
+
+    function renderGallery(ship) {
+      const gallery = document.getElementById('shipGallery');
+
+      const images = [];
+
+      if (ship.photo_url) {
+        images.push(ship.photo_url);
+      }
+
+      if (Array.isArray(ship.attachments)) {
+        ship.attachments.forEach(function (attachment) {
+          if (attachment.file_url) {
+            images.push(attachment.file_url);
+          }
+        });
+      }
+
+      while (images.length < 3) {
+        images.push('');
+      }
+
+      gallery.innerHTML = images.slice(0, 3).map(function (url, index) {
+        if (!url) {
+          return `
+            <div class="gallery-image"
+              style="display:grid;place-items:center;color:#7890a8;">
+              Foto ${index + 1} belum tersedia
+            </div>
+          `;
+        }
+
+        return `
+          <img
+            class="gallery-image"
+            src="${escapeAttribute(url)}"
+            alt="Foto kapal ${index + 1}"
+            onerror="this.style.display='none'">
+        `;
+      }).join('');
+    }
+
+    function renderParticular(ship) {
+      const fields = [
+        ['ID Kapal', ship.ship_id],
+        ['Kode Kapal', ship.ship_code],
+        ['Nama Kapal', ship.ship_name],
+        ['Nomor IMO', ship.imo_number],
+        ['Jenis Kapal', ship.ship_type],
+        ['Bendera', ship.flag],
+        ['Tahun Pembuatan', ship.year_built],
+        ['Panjang', ship.length],
+        ['Lebar', ship.width],
+        ['Gross Tonnage', ship.gross_tonnage],
+        ['Kapasitas Penumpang', ship.passenger_capacity],
+        ['Kapasitas Kendaraan', ship.vehicle_capacity],
+        ['Pelabuhan Asal', ship.home_port],
+        ['Operator', ship.operator],
+        ['Status Kapal', ship.current_status],
+        ['Dibuat', ship.created_at],
+        ['Diperbarui', ship.updated_at]
+      ];
+
+      document.getElementById('particularGrid').innerHTML =
+        fields.map(function (field) {
+          return `
+            <div class="particular-item">
+              <label>${escapeHtml(field[0])}</label>
+              <strong>${escapeHtml(field[1] || '-')}</strong>
+            </div>
+          `;
+        }).join('');
+
+      document.getElementById('shipNotes').innerHTML =
+        '<strong>Catatan:</strong><br>' +
+        escapeHtml(ship.notes || 'Tidak ada catatan.');
+    }
+
+    function closeDetail() {
+      document
+        .getElementById('detailModal')
+        .classList.remove('show');
+    }
+
+    document
+      .getElementById('detailModal')
+      .addEventListener('click', function (event) {
+        if (event.target === this) {
+          closeDetail();
+        }
+      });
+
+    function getStatusClass(status) {
+      const value = String(status || '').toLowerCase();
+
+      if (value.includes('operasi')) {
+        return 'status-operating';
+      }
+
+      if (value.includes('docking')) {
+        return 'status-docking';
+      }
+
+      if (value.includes('maintenance')) {
+        return 'status-maintenance';
+      }
+
+      return 'status-inactive';
+    }
+
+    function openAddModal() {
+      const modal = document.getElementById('addModal');
+      const form = document.getElementById('addShipForm');
+      const message = document.getElementById('addShipMessage');
+
+      if (form) {
+        form.reset();
+      }
+
+      if (message) {
+        message.textContent = '';
+        message.classList.remove('show');
+      }
+
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeAddModal() {
+      const modal = document.getElementById('addModal');
+
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    function submitAddShip(event) {
+      event.preventDefault();
+
+      const button = document.getElementById('saveShipButton');
+      const message = document.getElementById('addShipMessage');
+      const form = document.getElementById('addShipForm');
+
+      const data = {
+        ship_code: document.getElementById('ship_code').value.trim(),
+        ship_name: document.getElementById('ship_name').value.trim(),
+        imo_number: document.getElementById('imo_number').value.trim(),
+        ship_type: document.getElementById('ship_type').value.trim(),
+        flag: document.getElementById('flag').value.trim(),
+        year_built: document.getElementById('year_built').value.trim(),
+        length: document.getElementById('length').value.trim(),
+        width: document.getElementById('width').value.trim(),
+        gross_tonnage: document.getElementById('gross_tonnage').value.trim(),
+        passenger_capacity:
+          document.getElementById('passenger_capacity').value.trim(),
+        vehicle_capacity:
+          document.getElementById('vehicle_capacity').value.trim(),
+        home_port: document.getElementById('home_port').value.trim(),
+        operator: document.getElementById('operator').value.trim(),
+        current_status:
+          document.getElementById('current_status').value.trim(),
+        photo_url: document.getElementById('photo_url').value.trim(),
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      if (!data.ship_code || !data.ship_name) {
+        showAddShipMessage('Kode kapal dan nama kapal wajib diisi.');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Menyimpan...';
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          button.disabled = false;
+          button.textContent = 'Simpan Kapal';
+
+          if (!result || !result.success) {
+            showAddShipMessage(
+              result && result.message
+                ? result.message
+                : 'Data kapal gagal disimpan.'
+            );
+            return;
+          }
+
+          closeAddModal();
+          loadShips();
+          alert('Data kapal berhasil ditambahkan.');
+        })
+        .withFailureHandler(function(error) {
+          button.disabled = false;
+          button.textContent = 'Simpan Kapal';
+
+          showAddShipMessage(
+            error && error.message
+              ? error.message
+              : 'Terjadi kesalahan saat menyimpan data kapal.'
+          );
+        })
+        .createShip(data);
+    }
+
+
+      document
+        .getElementById('addModal')
+        .addEventListener('click', function(event) {
+          if (event.target === this) {
+            closeAddModal();
+          }
+        });
+        
+    function showAddShipMessage(message) {
+      const element = document.getElementById('addShipMessage');
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent = message || '';
+      element.classList.add('show');
+    }
+
+    function goBack() {
+      window.top.location.href = APP_URL + '?page=dashboard';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value);
+    }
+  </script>
+
+<?!= include('Scripts'); ?>
+</body>
+</html>

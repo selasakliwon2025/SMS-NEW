@@ -1,0 +1,83 @@
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-header">
+
+          <div class="sidebar-brand">
+              <div class="brand">
+                  <div class="brand-mark">∞</div>
+
+                  <div class="sidebar-brand-text">
+                      <strong>S M S - JN</strong>
+                      <small>SHIP MAINTENANCE SYSTEM</small>
+                  </div>
+              </div>
+          </div>
+
+          <button
+              type="button"
+              class="sidebar-toggle"
+              id="sidebarToggle"
+              aria-label="Buka atau tutup menu"
+              aria-expanded="true">
+              ☰
+          </button>
+
+      </div>
+
+      <div class="sidebar-menu">
+
+        <div class="menu-title">MENU UTAMA</div>
+
+        <button class="nav-item" type="button" data-page="dashboard">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+
+        <button class="nav-item" type="button" data-page="kapal">
+          <span class="nav-icon">▧</span>
+          <span class="nav-label">Kapal</span>
+        </button>
+
+
+        <button class="nav-item" type="button" data-page="docking">
+          <span class="nav-label">Docking & Maintenance</span>
+        </button>
+
+        <button class="nav-item" type="button">
+          <span class="nav-icon">▤</span>
+          <span class="nav-label">Catatan Harian OS</span>
+        </button>
+
+        <button class="nav-item" type="button" data-page="documents">
+          <span class="nav-icon">▧</span>
+          <span class="nav-label">Surat Kapal</span>
+        </button>
+
+        <button class="nav-item" type="button" data-page="laporan">
+          <span class="nav-icon">▤</span>
+          <span class="nav-label">Laporan</span>
+        </button>
+
+        <div class="menu-title">ADMINISTRASI</div>
+
+        <button class="nav-item" type="button" data-page="settings">
+          <span class="nav-icon">⚙</span>
+          <span class="nav-label">Pengaturan</span>
+        </button>
+
+        <button class="nav-item" type="button" id="sidebarLogout">
+          <span class="nav-icon">↪</span>
+          <span class="nav-label">Logout</span>
+        </button>
+
+      </div>
+
+      <div class="sidebar-status">
+        <strong>Status Sistem</strong>
+        Sistem berjalan normal.<br>
+        Database Google Sheets terhubung.
+      </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>

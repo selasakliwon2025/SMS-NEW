@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>Ship Maintenance System</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <?!= include('Styles'); ?>
+</head>
+
+<body data-page="dashboard">
+
+  <div class="app-shell">
+
+    <?!= include('Sidebar'); ?>
+    <main class="main">
+
+      <?!= include('Navbar'); ?>
+
+
+      <section class="content">
+
+        <div class="hero" id="heroBanner">
+
+          <div class="hero-content">
+              <h1>
+                  Selamat Datang di<br>
+                  Ship Maintenance System
+              </h1>
+
+              <p>
+                  PT. Jembatan Nusantara<br>
+                  Pantau kondisi kapal, jadwal docking, dan catatan Owner Surveyor secara real-time.
+              </p>
+          </div>
+
+          <div class="hero-date">
+              <strong id="currentDate">Memuat tanggal...</strong>
+              <span id="currentTime">Memuat waktu...</span>
+          </div>
+
+      </div>
+
+        <h2 class="section-title">Ringkasan Operasional</h2>
+
+        <div class="stats-grid">
+
+          <div class="stat-card">
+            <div>
+              <label>Total Kapal</label>
+              <strong>12</strong>
+              <small>KMP dalam fleet</small>
+            </div>
+            <div class="stat-icon">⚓</div>
+          </div>
+
+          <div class="stat-card">
+            <div>
+              <label>Docking Berjalan</label>
+              <strong>3</strong>
+              <small>dari 12 kapal</small>
+            </div>
+            <div class="stat-icon">🛠</div>
+          </div>
+
+          <div class="stat-card">
+            <div>
+              <label>Pekerjaan OS</label>
+              <strong>28</strong>
+              <small>catatan bulan ini</small>
+            </div>
+            <div class="stat-icon">▤</div>
+          </div>
+
+          <div class="stat-card">
+            <div>
+              <label>Dokumen Expired</label>
+              <strong>4</strong>
+              <small>perlu perhatian</small>
+            </div>
+            <div class="stat-icon">⚠</div>
+          </div>
+
+        </div>
+
+        <div class="dashboard-grid">
+
+          <section class="panel">
+
+            <div class="panel-header">
+              <h3>Status Kapal</h3>
+              <button class="panel-link" type="button">Lihat semua →</button>
+            </div>
+
+            <div class="donut-area">
+
+              <div class="donut"></div>
+
+              <div class="legend">
+                <div class="legend-item">
+                  <span class="legend-dot green"></span>
+                  Beroperasi 8
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot orange"></span>
+                  Docking 3
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot red"></span>
+                  Maintenance 1
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+
+          <section class="panel">
+
+            <div class="panel-header">
+              <h3>Jadwal Docking (3 Bulan Terakhir)</h3>
+            </div>
+
+            <div class="bar-chart">
+
+              <div class="bar-group">
+                <div class="bar" style="height: 82%;"></div>
+                <div class="bar green" style="height: 60%;"></div>
+                <div class="bar orange" style="height: 25%;"></div>
+              </div>
+
+              <div class="bar-group">
+                <div class="bar" style="height: 82%;"></div>
+                <div class="bar green" style="height: 60%;"></div>
+                <div class="bar orange" style="height: 25%;"></div>
+              </div>
+
+              <div class="bar-group">
+                <div class="bar" style="height: 70%;"></div>
+                <div class="bar green" style="height: 50%;"></div>
+                <div class="bar orange" style="height: 18%;"></div>
+              </div>
+
+            </div>
+
+            <div class="month-labels">
+              <span>Apr 2025</span>
+              <span>Mei 2025</span>
+              <span>Jun 2025</span>
+            </div>
+
+          </section>
+
+          <section class="panel">
+
+            <div class="panel-header">
+              <h3>Peringatan Surat Kapal</h3>
+              <button class="panel-link" type="button">Lihat semua →</button>
+            </div>
+
+            <div class="alert-item">
+              <span class="alert-icon"></span>
+
+              <div class="alert-content">
+                <strong>Sertifikat Keselamatan</strong>
+                <small>KMP Bahari Nusantara</small>
+              </div>
+
+              <span class="alert-badge">30 hari</span>
+            </div>
+
+            <div class="alert-item">
+              <span class="alert-icon"></span>
+
+              <div class="alert-content">
+                <strong>Surat Ukur</strong>
+                <small>KMP Sagara Jaya</small>
+              </div>
+
+              <span class="alert-badge">Expired</span>
+            </div>
+
+            <div class="alert-item">
+              <span class="alert-icon orange"></span>
+
+              <div class="alert-content">
+                <strong>MARPOL Annex I</strong>
+                <small>KMP Merdeka</small>
+              </div>
+
+              <span class="alert-badge orange">60 hari</span>
+            </div>
+
+          </section>
+
+        </div>
+
+        <section class="panel table-panel">
+
+          <div class="panel-header">
+            <h3>Kapal dalam Perawatan / Docking</h3>
+          </div>
+
+          <div class="table-scroll">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Kapal</th>
+                  <th>Jenis Kapal</th>
+                  <th>Status Docking</th>
+                  <th>Progress</th>
+                  <th>ETA Selesai</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><strong>KMP Bahari Nusantara</strong></td>
+                  <td>Ro-Ro</td>
+                  <td>
+                    <span class="status-pill green">Docking</span>
+                  </td>
+                  <td>
+                    <div class="progress-track">
+                      <span style="width: 75%;"></span>
+                    </div>
+                  </td>
+                  <td>12 Mei 2025</td>
+                </tr>
+
+                <tr>
+                  <td>2</td>
+                  <td><strong>KMP Sagara Jaya</strong></td>
+                  <td>Ro-Ro</td>
+                  <td>
+                    <span class="status-pill orange">Persiapan</span>
+                  </td>
+                  <td>
+                    <div class="progress-track">
+                      <span style="width: 35%;"></span>
+                    </div>
+                  </td>
+                  <td>25 Mei 2025</td>
+                </tr>
+
+                <tr>
+                  <td>3</td>
+                  <td><strong>KMP Nusantara 3</strong></td>
+                  <td>Ro-Ro</td>
+                  <td>
+                    <span class="status-pill green">Docking</span>
+                  </td>
+                  <td>
+                    <div class="progress-track">
+                      <span style="width: 60%;"></span>
+                    </div>
+                  </td>
+                  <td>03 Juni 2025</td>
+                </tr>
+
+                <tr>
+                  <td>4</td>
+                  <td><strong>KMP Merdeka</strong></td>
+                  <td>Ro-Ro</td>
+                  <td>
+                    <span class="status-pill red">Maintenance</span>
+                  </td>
+                  <td>
+                    <div class="progress-track">
+                      <span style="width: 25%; background: var(--red);"></span>
+                    </div>
+                  </td>
+                  <td>30 Juni 2025</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+        </section>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const token = sessionStorage.getItem("sms_token");
+      const savedUser = sessionStorage.getItem("sms_user");
+
+      const appUrl = "<?= appUrl ?>";
+
+      const sidebar = document.getElementById("sidebar");
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const mobileMenuButton = document.getElementById("mobileMenuButton");
+      const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+      const profileName = document.getElementById("profileName");
+      const profileRole = document.getElementById("profileRole");
+      const profileAvatar = document.getElementById("profileAvatar");
+
+      const topLogout = document.getElementById("topLogout");
+      const sidebarLogout = document.getElementById("sidebarLogout");
+
+      document.getElementById('menuKapal').onclick = function () {
+        window.top.location.href = '<?= appUrl ?>?page=kapal';
+      };
+
+      function goToLogin() {
+        window.top.location.href = appUrl + "?page=login";
+      }
+
+      if (!token || !savedUser) {
+        goToLogin();
+        return;
+      }
+
+      let user = {};
+
+      try {
+        user = JSON.parse(savedUser);
+      } catch (error) {
+        console.error("Data pengguna tidak valid:", error);
+        goToLogin();
+        return;
+      }
+
+      /*
+       * Mendukung beberapa kemungkinan nama field
+       * dari sheet Users.
+       */
+      const displayName =
+        user.nama ||
+        user.name ||
+        user.fullName ||
+        user.employeeName ||
+        user.namaPegawai ||
+        user.nama_user ||
+        user.nip ||
+        "Pengguna";
+
+      const displayRole =
+        user.role ||
+        user.jabatan ||
+        user.position ||
+        user.level ||
+        "USER";
+
+      profileName.textContent = displayName;
+      profileRole.textContent = String(displayRole).toUpperCase();
+      profileAvatar.textContent =
+        String(displayName).trim().charAt(0).toUpperCase();
+
+      function isMobile() {
+        return window.innerWidth <= 768;
+      }
+
+      function updateToggleState() {
+        const isOpen = document.body.classList.contains("sidebar-open");
+        const isCollapsed =
+          document.body.classList.contains("sidebar-collapsed");
+
+        sidebarToggle.setAttribute(
+          "aria-expanded",
+          String(!isCollapsed)
+        );
+
+        mobileMenuButton.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+      }
+
+      sidebarToggle.addEventListener("click", function () {
+        if (isMobile()) {
+          document.body.classList.toggle("sidebar-open");
+        } else {
+          document.body.classList.toggle("sidebar-collapsed");
+        }
+
+        updateToggleState();
+      });
+
+      mobileMenuButton.addEventListener("click", function () {
+        document.body.classList.toggle("sidebar-open");
+        updateToggleState();
+      });
+
+      sidebarOverlay.addEventListener("click", function () {
+        document.body.classList.remove("sidebar-open");
+        updateToggleState();
+      });
+
+      window.addEventListener("resize", function () {
+        if (!isMobile()) {
+          document.body.classList.remove("sidebar-open");
+        }
+
+        updateToggleState();
+      });
+
+      function confirmLogout() {
+        Swal.fire({
+          title: "Keluar dari sistem?",
+          text: "Sesi Anda akan diakhiri.",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Ya, Keluar",
+          cancelButtonText: "Batal",
+          confirmButtonColor: "#087bd1",
+          cancelButtonColor: "#7890a8",
+          reverseButtons: true
+        }).then(function (result) {
+          if (!result.isConfirmed) {
+            return;
+          }
+
+          Swal.fire({
+            title: "Memproses...",
+            text: "Sedang mengakhiri sesi.",
+            allowOutsideClick: false,
+            didOpen: function () {
+              Swal.showLoading();
+            }
+          });
+
+          google.script.run
+            .withSuccessHandler(function () {
+              sessionStorage.removeItem("sms_token");
+              sessionStorage.removeItem("sms_user");
+
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil logout",
+                text: "Anda akan diarahkan ke halaman login.",
+                timer: 1300,
+                showConfirmButton: false
+              }).then(function () {
+                goToLogin();
+              });
+            })
+            .withFailureHandler(function (error) {
+              console.error("Logout gagal:", error);
+
+              Swal.fire({
+                icon: "error",
+                title: "Logout gagal",
+                text: "Silakan coba kembali."
+              });
+            })
+            .logout(token);
+        });
+      }
+
+      topLogout.addEventListener("click", confirmLogout);
+      sidebarLogout.addEventListener("click", confirmLogout);
+
+      function updateClock() {
+        const now = new Date();
+
+        const dateText = now.toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric"
+        });
+
+        const timeText = now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }) + " WIB";
+
+        document.getElementById("currentDate").textContent =
+          "▣ " + dateText;
+
+        document.getElementById("currentTime").textContent =
+          timeText;
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      function loadImage(targetId, loaderFunction) {
+        google.script.run
+          .withSuccessHandler(function (dataUri) {
+            if (dataUri) {
+              document.getElementById(targetId).src = dataUri;
+            }
+          })
+          .withFailureHandler(function (error) {
+            console.error("Gagal memuat gambar:", error);
+          })[loaderFunction]();
+      }
+
+      loadImage("logoDanantara", "getLogoDanantara");
+      loadImage("logoASDP", "getLogoASDP");
+      loadImage("logoJN", "getLogoJN");
+
+      google.script.run
+        .withSuccessHandler(function (dataUri) {
+          if (dataUri) {
+            document.getElementById("heroBanner").style.backgroundImage =
+              "linear-gradient(90deg, rgba(4, 48, 91, 0.97) 0%, rgba(5, 83, 139, 0.78) 48%, rgba(5, 111, 174, 0.42) 100%), url('" +
+              dataUri +
+              "')";
+          }
+        })
+        .withFailureHandler(function (error) {
+          console.error("Gagal memuat background kapal:", error);
+        })
+        .getShipBackground();
+
+      updateToggleState();
+
+    })();
+
+  </script>
+
+</body>
+<?!= include('Scripts'); ?>
+</html>
